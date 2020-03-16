@@ -44,6 +44,8 @@ enum UniformID {
     U_SHADOW_MAP6,
     U_SHADOW_MAP7,
     U_LIGHT_ID,
+	U_UV_SCALE,
+	U_NORMAL_FACTOR,
 	UNIFORMS_COUNT
 };
 
@@ -86,7 +88,9 @@ const std::unordered_map<std::string, UniformID> uniform_string2id_ = {
     { "u_shadow_map[5]", U_SHADOW_MAP5 },
     { "u_shadow_map[6]", U_SHADOW_MAP6 },
     { "u_shadow_map[7]", U_SHADOW_MAP7 },
-    { "u_light_id", U_LIGHT_ID }
+    { "u_light_id", U_LIGHT_ID },
+{"u_normal_factor",U_NORMAL_FACTOR},
+	{"u_uv_scale",U_UV_SCALE}
     
     
 };

@@ -14,6 +14,10 @@ uniform vec3 u_diffuse;
 uniform vec3 u_specular;
 uniform float u_specular_gloss;
 
+//texture scaling uniforms
+uniform vec2 u_uv_scale;
+uniform float u_normal_factor;
+
 //texture uniforms
 uniform int u_use_diffuse_map;
 uniform sampler2D u_diffuse_map;
@@ -147,17 +151,28 @@ vec3 perturbNormal( vec3 N, vec3 P, vec2 texcoord, vec3 normal_sample )
 
 void main(){
 
-    
+    vec2 s_uv = v_uv * u_uv_scale;
+
     //normal
     vec3 N = normalize(v_normal); 
+	if(u_use_normal_map != 0){
+		vec3 Nmap = perturbNormal(N,normalize(v_cam_dir),s_uv,texture(u_normal_map,s_uv).xyz);
+		N = mix(N,Nmap,u_normal_factor);
+	}
 
+	//specular
+	vec3 mat_specular = u_specular;
+	if(u_use_specular_map != 0){
+		mat_specular *= texture(u_specular_map,s_uv).xyz;
+	}
     //diffuse    
     vec3 mat_diffuse = u_diffuse; 
-    if (u_use_diffuse_map != 0)
-        mat_diffuse = mat_diffuse * texture(u_diffuse_map, v_uv).xyz;
+    
 
     //specular
-    vec3 mat_specular = u_specular;
+   if (u_use_diffuse_map != 0)
+        mat_diffuse = mat_diffuse * texture(u_diffuse_map, s_uv).xyz;
+
 
 	//ambient light
 	vec3 final_color = u_ambient * mat_diffuse;
@@ -213,6 +228,6 @@ void main(){
         final_color += ((diffuse_color + specular_color) * attenuation * spot_cone_intensity) * (1.0 - shadow);
 
 	}
-    
+
     fragColor = vec4(final_color, 1.0);
 }

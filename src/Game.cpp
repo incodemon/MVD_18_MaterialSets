@@ -45,15 +45,16 @@ void Game::init(int w, int h) {
     Material& mat_grey = graphics_system_.getMaterial(mat_grey_index);
     mat_grey.shader_id = phong_shader->program;
     mat_grey.specular = lm::vec3(0, 0, 0);
-
-    
+	mat_grey.normal_map = Parsers::parseTexture("data/assets/bricks_normal.tga");
+	mat_grey.uv_scale = lm::vec2(50.0f,50.0f);
+	mat_grey.normal_factor = 0.2f;
     
     //whole bunch of materials!
     Parsers::parseMTL("data/assets/nanosuit/", "nanosuit.mtl", graphics_system_.getMaterials(), phong_shader->program);
 
     /******** GEOMETRIES **********/
     
-    int suit_geom = graphics_system_.createGeometryFromFile("data/assets/nanosuit/nanosuit.obj");
+    int suit_geom = graphics_system_.createMultiGeometryFromFile("data/assets/nanosuit/nanosuit.obj");
     int cube_geom = graphics_system_.createGeometryFromFile("data/assets/open_room_inv.obj");
 
     

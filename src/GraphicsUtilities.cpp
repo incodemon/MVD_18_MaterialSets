@@ -9,7 +9,10 @@ Geometry::Geometry(std::vector<float>& vertices, std::vector<float>& uvs, std::v
 
 void Geometry::render() {
 	glBindVertexArray(vao);
-	glDrawElements(GL_TRIANGLES, num_tris * 3, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, //This is the type of element i want to draw
+					num_tris * 3, //This is the number of indices 
+					GL_UNSIGNED_INT, //the type of the index
+					0); //a pointer to the first index
 	glBindVertexArray(0);
 }
 
@@ -19,7 +22,20 @@ void Geometry::render(int set) {
     glBindVertexArray(vao);
     
 	//render specific set here
+	if (set == 0) {
+		glDrawElements(GL_TRIANGLES, material_sets[set] * 3, GL_UNSIGNED_INT, 0);
+	}
+	else {
+		//find end of previous set
+		GLuint start_index = material_sets[set - 1] * 3;
+		//get end of current set
+		GLuint end_index = material_sets[set] * 3;
+		//count the number of indices to draw
+		GLuint count = end_index - start_index;
 
+		glDrawElements(GL_TRIANGLES,count,GL_UNSIGNED_INT,(void*)(start_index * sizeof(GLuint)));
+
+	}
 
 
     glBindVertexArray(0);

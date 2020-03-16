@@ -315,6 +315,17 @@ void GraphicsSystem::renderMeshComponent_(Mesh& comp) {
 	shader_->setUniform(U_NORMAL_MATRIX, normal_matrix);
 	shader_->setUniform(U_CAM_POS, cam.position);
 
+	if (geom.material_sets.size() == 0) {
+		geom.render();
+	}else{
+		//we call a different to render the different geometry material sets
+		for (size_t i = 0; i < geom.material_sets.size(); i++) {
+			current_material_ = geom.material_set_ids[i];
+			setMaterialUniforms();
+			//render current set
+			geom.render((int)i);
+		}
+	}
     geom.render();
 
 }
@@ -389,13 +400,23 @@ void GraphicsSystem::setMaterialUniforms() {
 	shader_->setUniform(U_DIFFUSE, mat.diffuse);
 	shader_->setUniform(U_SPECULAR, mat.specular);
 	shader_->setUniform(U_SPECULAR_GLOSS, mat.specular_gloss);
-    
+	shader_->setUniform(U_UV_SCALE,mat.uv_scale);
+	shader_->setUniform(U_NORMAL_FACTOR, mat.normal_factor);
     //texture uniforms - diffuse
     if (mat.diffuse_map != -1){
         shader_->setUniform(U_USE_DIFFUSE_MAP, 1);
         shader_->setTexture(U_DIFFUSE_MAP, mat.diffuse_map, 8);
     } else shader_->setUniform(U_USE_DIFFUSE_MAP, 0);
-
+	//normal map
+	if (mat.normal_map != -1) {
+		shader_->setUniform(U_USE_DIFFUSE_MAP,1);
+		shader_->setTexture(U_NORMAL_MAP,mat.normal_map,9);
+	}else shader_->setUniform(U_USE_DIFFUSE_MAP,0);
+	//specular map
+	if (mat.specular_map != -1) {
+		shader_->setUniform(U_USE_SPECULAR_MAP, 1);
+		shader_->setTexture(U_NORMAL_MAP, mat.specular_map, 10);
+	}else shader_->setUniform(U_USE_SPECULAR_MAP, 0);
     //reflection
     if (mat.cube_map) {
         shader_->setUniform(U_USE_REFLECTION_MAP, 1);
